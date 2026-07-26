@@ -43,7 +43,7 @@ const testimonials: TestimonialItem[] = [
 
 export function TestimonialsSection() {
   return (
-    <section id="about" className="relative bg-background py-20 md:py-32 overflow-hidden border-t border-border/50">
+    <section id="about" className="relative bg-background py-20 md:py-32 overflow-hidden border-t border-border/50 scroll-mt-28">
       {/* Decorative background grids */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />

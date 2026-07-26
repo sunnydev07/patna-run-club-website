@@ -57,7 +57,7 @@ export function EditorialSection() {
   const parallaxY = (scrollProgress - 0.5) * 30; // -15px to +15px range
 
   return (
-    <section className="bg-background">
+    <section id="reserve" className="bg-background scroll-mt-28">
       {/* Newsletter Banner */}
       <div className="max-w-xl mx-auto px-6 py-20 text-center relative z-10">
         <h3 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-3">

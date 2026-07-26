@@ -30,7 +30,7 @@ export function PhilosophySection() {
   const descriptionText = "Patna Run Club was born in 2026 from a simple belief — that running is not just exercise, it's a movement. Founded by Dr. Shweta Singh, we grew from a handful of runners at Shiv Puri Park into Patna's most vibrant fitness community.";
 
   return (
-    <section id="products" className="bg-background py-20 md:py-28">
+    <section id="products" className="bg-background py-20 md:py-28 scroll-mt-28">
       {/* 3D Rotating Title */}
       <div className="relative w-full max-w-7xl mx-auto px-4 mb-16 md:mb-24">
         <h2 className="text-[7vw] sm:text-[6vw] md:text-[5vw] lg:text-[4vw] font-bold leading-tight tracking-tighter text-foreground text-center px-4 min-h-[160px] flex items-center justify-center">

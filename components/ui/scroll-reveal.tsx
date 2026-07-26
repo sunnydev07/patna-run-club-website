@@ -1,5 +1,5 @@
 import React, { useRef, useMemo } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 
 interface ScrollRevealProps {
   children: string;
@@ -10,6 +10,41 @@ interface ScrollRevealProps {
   textClassName?: string;
 }
 
+interface RevealWordProps {
+  word: string;
+  progress: MotionValue<number>;
+  start: number;
+  end: number;
+  baseOpacity: number;
+  blurStrength: number;
+}
+
+/**
+ * Rendered as its own component so the hooks below are called from a stable
+ * component instance instead of inside a `.map()` callback.
+ */
+const RevealWord: React.FC<RevealWordProps> = ({
+  word,
+  progress,
+  start,
+  end,
+  baseOpacity,
+  blurStrength,
+}) => {
+  const opacity = useTransform(progress, [start, end], [baseOpacity, 1]);
+  const blurVal = useTransform(progress, [start, end], [blurStrength, 0]);
+  const filter = useTransform(blurVal, (b) => `blur(${b}px)`);
+
+  return (
+    <motion.span
+      style={{ opacity, filter, display: 'inline-block', whiteSpace: 'pre' }}
+      className="will-change-[opacity,filter]"
+    >
+      {word}
+    </motion.span>
+  );
+};
+
 const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
   enableBlur = true,
@@ -19,43 +54,34 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   textClassName = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end center"]
+    offset: ['start end', 'end center'],
   });
 
-  const words = useMemo(() => {
-    return children.split(/(\s+)/);
-  }, [children]);
+  // Keep the trailing space attached to each word. Whitespace-only flex items
+  // are collapsed by the flexbox algorithm, which previously ran every word
+  // together ("PatnaRunClubwasborn...").
+  const words = useMemo(() => children.trim().split(/\s+/), [children]);
 
   return (
     <div ref={containerRef} className={`relative ${containerClassName}`}>
       <p className={`leading-relaxed flex flex-wrap ${textClassName}`}>
         {words.map((word, idx) => {
-          if (word.match(/^\s+$/)) {
-            return <span key={idx}>{word}</span>;
-          }
-
-          const wordCount = words.length;
-          const start = (idx / wordCount) * 0.7;
+          const start = (idx / words.length) * 0.7;
           const end = Math.min(1, start + 0.3);
 
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const opacity = useTransform(scrollYProgress, [start, end], [baseOpacity, 1]);
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const blurVal = useTransform(scrollYProgress, [start, end], [enableBlur ? blurStrength : 0, 0]);
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const filter = useTransform(blurVal, b => `blur(${b}px)`);
-
           return (
-            <motion.span
-              key={idx}
-              style={{ opacity, filter, display: 'inline-block' }}
-              className="will-change-[opacity,filter]"
-            >
-              {word}
-            </motion.span>
+            <RevealWord
+              key={`${word}-${idx}`}
+              word={idx === words.length - 1 ? word : `${word} `}
+              progress={scrollYProgress}
+              start={start}
+              end={end}
+              baseOpacity={baseOpacity}
+              blurStrength={enableBlur ? blurStrength : 0}
+            />
           );
         })}
       </p>

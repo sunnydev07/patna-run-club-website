@@ -13,14 +13,14 @@ const images = [
 
 export function GallerySection() {
   return (
-    <section id="gallery" className="bg-black py-20 relative z-10">
+    <section id="gallery" className="bg-black py-20 relative z-10 scroll-mt-28">
       <div className="max-w-5xl mx-auto px-4">
         {/* Section Heading */}
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
             Club Moments
           </h2>
-          <p className="mt-4 text-muted-foreground text-lg">
+          <p className="mt-4 text-white/70 text-lg">
             A glimpse into our weekly runs, outdoor sessions, and community celebrations.
           </p>
         </div>
@@ -58,8 +58,8 @@ export function GallerySection() {
                       alt={image.alt}
                       fill
                       className="object-cover pointer-events-none select-none"
-                      sizes="(max-w-5xl) 100vw, 1024px"
-                      priority={index === 0}
+                      sizes="(max-width: 1024px) 100vw, 1024px"
+                      loading="lazy"
                     />
                   </div>
                 </GlareHover>

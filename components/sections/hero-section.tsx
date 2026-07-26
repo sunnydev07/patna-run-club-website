@@ -79,7 +79,7 @@ export function HeroSection() {
   const sideTranslateY = -(imageProgress * 15); // Move up by 15% when fully expanded
 
   return (
-    <section ref={sectionRef} className="relative bg-background">
+    <section id="hero" ref={sectionRef} className="relative bg-background">
       {/* Sticky container for scroll animation */}
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Background Particle Overlay */}
@@ -144,12 +144,12 @@ export function HeroSection() {
             >
               {/* Text Behind - Fades out first */}
               <div 
-                className="absolute inset-0 z-20 flex items-center justify-center"
-                style={{ opacity: textOpacity, transform: 'translateY(-200px)' }}
+                className="absolute inset-0 z-20 flex items-center justify-center px-4"
+                style={{ opacity: textOpacity }}
               >
                 <SplitText
                   text="PATNA"
-                  className="whitespace-nowrap text-[35vw] font-bold leading-[0.8] tracking-tighter text-foreground"
+                  className="whitespace-nowrap text-[19vw] font-bold leading-[0.85] tracking-tighter text-white [text-shadow:0_2px_40px_rgba(0,0,0,0.55)]"
                   delay={80}
                   duration={1.2}
                   ease={[0.16, 1, 0.3, 1]}
@@ -209,7 +209,7 @@ export function HeroSection() {
       >
         <BlurText
           text="Run Patna, Run Strong."
-          className="mx-auto max-w-2xl text-2xl leading-relaxed text-white md:text-3xl lg:text-[2.5rem] lg:leading-snug justify-center"
+          className="mx-auto max-w-2xl text-2xl leading-relaxed text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.7)] md:text-3xl lg:text-[2.5rem] lg:leading-snug justify-center"
           delay={150}
           animateBy="words"
           direction="bottom"
