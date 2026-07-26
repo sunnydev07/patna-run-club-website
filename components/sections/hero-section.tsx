@@ -1,10 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import SplitText from "@/components/ui/split-text";
 import BlurText from "@/components/ui/blur-text";
 import DotField from "@/components/ui/dot-field";
+import {
+  useStickyScrollProgress,
+  useSupportsHeavyMotion,
+} from "@/hooks/use-scroll-progress";
 
 const word = "PATNA";
 
@@ -37,27 +41,9 @@ const sideImages = [
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollableHeight = window.innerHeight * 2;
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
-      
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  // rAF-throttled: one read per frame instead of one setState per scroll event.
+  const scrollProgress = useStickyScrollProgress(sectionRef, 2);
+  const supportsHeavyMotion = useSupportsHeavyMotion();
 
   // Text fades out first (0 to 0.2)
   const textOpacity = Math.max(0, 1 - (scrollProgress / 0.2));
@@ -81,21 +67,29 @@ export function HeroSection() {
   return (
     <section id="hero" ref={sectionRef} className="relative bg-background">
       {/* Sticky container for scroll animation */}
-      <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Background Particle Overlay */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-          <DotField
-            dotRadius={1.5}
-            dotSpacing={18}
-            cursorRadius={350}
-            cursorForce={0.2}
-            bulgeStrength={60}
-            glowRadius={200}
-            gradientFrom="rgba(120, 120, 120, 0.3)"
-            gradientTo="rgba(120, 120, 120, 0.05)"
-            glowColor="rgba(120, 120, 120, 0.1)"
-          />
-        </div>
+      {/* dvh (not vh) so the sticky panel matches window.innerHeight on
+          mobile -- with vh the panel was taller than the visible viewport and
+          scroll progress lurched as the URL bar collapsed. */}
+      <div className="sticky top-0 h-[100dvh] overflow-hidden">
+        {/* Background particle overlay.
+            It is cursor-driven, so on touch devices it burned a full-screen
+            canvas repaint every frame for no visible effect. Only mount it
+            where there is a real pointer and motion is welcome. */}
+        {supportsHeavyMotion && (
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <DotField
+              dotRadius={1.5}
+              dotSpacing={18}
+              cursorRadius={350}
+              cursorForce={0.2}
+              bulgeStrength={60}
+              glowRadius={200}
+              gradientFrom="rgba(120, 120, 120, 0.3)"
+              gradientTo="rgba(120, 120, 120, 0.05)"
+              glowColor="rgba(120, 120, 120, 0.1)"
+            />
+          </div>
+        )}
         <div className="flex h-full w-full items-center justify-center relative z-10">
           {/* Bento Grid Container */}
           <div 
@@ -217,7 +211,7 @@ export function HeroSection() {
       </div>
 
       {/* Scroll space to enable animation */}
-      <div className="h-[200vh]" />
+      <div className="h-[200dvh]" />
     </section>
   );
 }

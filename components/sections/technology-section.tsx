@@ -1,35 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import {
+  useStickyScrollProgress,
+  useViewportProgress,
+} from "@/hooks/use-scroll-progress";
 
 function ScrollRevealText({ text }: { text: string }) {
   const containerRef = useRef<HTMLParagraphElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      
-      const rect = containerRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      // Slower animation - more viewport range
-      const startOffset = windowHeight * 0.9;
-      const endOffset = windowHeight * 0.1;
-      
-      const totalDistance = startOffset - endOffset;
-      const currentPosition = startOffset - rect.top;
-      
-      const newProgress = Math.max(0, Math.min(1, currentPosition / totalDistance));
-      setProgress(newProgress);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial check
-    
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const progress = useViewportProgress(containerRef);
 
   const words = text.split(" ");
   
@@ -43,16 +23,18 @@ function ScrollRevealText({ text }: { text: string }) {
         const appearProgress = progress * (words.length + 1);
         const wordAppearProgress = Math.max(0, Math.min(1, appearProgress - index));
         const wordOpacity = wordAppearProgress;
-        const wordBlur = (1 - wordAppearProgress) * 40;
-        
+        // A 40px blur on many spans at once is a heavy GPU repaint on phones.
+        // 8px reads the same at this font size for a fraction of the cost, and
+        // rounding avoids re-rasterising on imperceptible deltas.
+        const wordBlur = Math.round((1 - wordAppearProgress) * 8 * 10) / 10;
+
         return (
           <span
             key={index}
             className="inline-block"
             style={{
               opacity: wordOpacity,
-              filter: `blur(${wordBlur}px)`,
-              transition: 'opacity 0.1s linear, filter 0.1s linear',
+              filter: wordBlur > 0.1 ? `blur(${wordBlur}px)` : undefined,
               marginRight: '0.3em',
             }}
           >
@@ -86,45 +68,13 @@ const textCycles = [
 export function TechnologySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const textSectionRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [textProgress, setTextProgress] = useState(0);
-  
+
   const descriptionText = "Every Sunday at 6 AM, runners of all paces and ages gather at Shiv Puri Park. From morning runs and marathons to Zumba, yoga, and push-up challenges — we believe running is a celebration. All paces. All ages. Everyone welcome.";
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollableHeight = window.innerHeight * 4; // Increased for 3 text cycles
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
-      
-      setScrollProgress(progress);
-
-      // Text scroll progress
-      if (textSectionRef.current) {
-        const textRect = textSectionRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        
-        const startOffset = windowHeight * 0.9;
-        const endOffset = windowHeight * 0.1;
-        
-        const totalDistance = startOffset - endOffset;
-        const currentPosition = startOffset - textRect.top;
-        
-        const newTextProgress = Math.max(0, Math.min(1, currentPosition / totalDistance));
-        setTextProgress(newTextProgress);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  // Both progress values are now rAF-throttled instead of updating state on
+  // every scroll event.
+  const scrollProgress = useStickyScrollProgress(sectionRef, 4);
+  const textProgress = useViewportProgress(textSectionRef);
 
   // Title fades out first (0 to 0.2)
   const titleOpacity = Math.max(0, 1 - (scrollProgress / 0.2));
@@ -147,7 +97,7 @@ export function TechnologySection() {
   return (
     <section ref={sectionRef} className="relative bg-foreground">
       {/* Sticky container for scroll animation */}
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-[100dvh] overflow-hidden">
         <div className="flex h-full w-full items-center justify-center">
           {/* Bento Grid Container */}
           <div 
@@ -321,7 +271,7 @@ export function TechnologySection() {
       </div>
 
       {/* Scroll space to enable animation - increased for 3 text cycles */}
-      <div className="h-[400vh]" />
+      <div className="h-[400dvh]" />
 
       {/* Description Section with Background Image and Scroll Reveal */}
       <div 

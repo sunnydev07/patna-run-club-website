@@ -124,8 +124,19 @@
     @apply bg-background text-foreground;
   }
   
-  html {
-    scroll-behavior: smooth;
+  /* Smooth anchor scrolling, but never fight a user who asked for less
+     motion (it also makes long anchor jumps feel sluggish on phones). */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Keeps scroll-linked sections from re-laying out every frame while the
+     mobile URL bar collapses. */
+  html,
+  body {
+    overscroll-behavior-y: none;
   }
 }
 
