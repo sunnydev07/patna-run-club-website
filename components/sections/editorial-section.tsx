@@ -2,8 +2,8 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import CountUp from "@/components/ui/count-up";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Instagram } from "lucide-react";
 
 const specs = [
   { label: "Members", value: "200+" },
@@ -61,22 +61,34 @@ export function EditorialSection() {
       {/* Newsletter Banner */}
       <div className="max-w-xl mx-auto px-6 py-20 text-center relative z-10">
         <h3 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-3">
-          Join the Patna Run Club Newsletter
+          Join the Patna Run Club
         </h3>
-        <p className="text-muted-foreground text-sm mb-8 max-w-sm mx-auto">
-          Get weekly updates on running routes, special events, and health tips.
+        <p className="text-muted-foreground text-sm mb-8 max-w-sm mx-auto leading-relaxed">
+          Message us on Instagram to get the Sunday 6 AM route, event updates,
+          and your ₹149 membership sorted.
         </p>
-        <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-          <Input 
-            type="email" 
-            placeholder="Enter your email" 
-            className="rounded-full bg-muted/50 border-border px-5 py-6 text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring" 
-            required 
-          />
-          <Button type="submit" className="rounded-full bg-foreground text-background px-6 py-6 font-medium hover:opacity-90 transition-opacity">
-            Subscribe
+        <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto sm:justify-center">
+          <Button
+            asChild
+            className="rounded-full bg-foreground text-background px-8 py-6 font-medium hover:opacity-90 transition-opacity"
+          >
+            <a
+              href="https://www.instagram.com/patnarunclub/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Instagram className="size-5" aria-hidden="true" />
+              Message us on Instagram
+            </a>
           </Button>
-        </form>
+          <Button
+            asChild
+            variant="outline"
+            className="rounded-full border-border bg-transparent px-8 py-6 font-medium text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <a href="#accessories">See upcoming runs</a>
+          </Button>
+        </div>
       </div>
 
       {/* Full-width Hero Video with Parallax */}

@@ -125,21 +125,17 @@ export function FooterSection() {
           <div className="flex items-center gap-4">
             <Link
               href="https://www.instagram.com/patnarunclub/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               Instagram
             </Link>
             <Link
-              href="#"
+              href="#reserve"
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
-              WhatsApp
-            </Link>
-            <Link
-              href="#"
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Facebook
+              Join the club
             </Link>
           </div>
         </div>
